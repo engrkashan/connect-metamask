@@ -1,58 +1,83 @@
 import {
   ChakraProvider,
   useDisclosure,
-  Button,
-  VStack,
   Box,
+  HStack,
+  VStack,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import { useEthers } from "@usedapp/core";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { useState } from "react";
 import theme from "./theme";
-import Layout from "./components/Layout";
 import ConnectButton from "./components/ConnectButton";
 import AccountModal from "./components/AccountModal";
-import InvestmentModal from "./components/InvestmentModal";
+import DashboardLayout from "./components/DashboardLayout";
+import DashboardOverview from "./components/DashboardOverview";
+import InvestPage from "./components/InvestPage";
 import "@fontsource/inter";
+
+// Mock public key for demo
+const stripePromise = loadStripe(
+  "pk_test_51IqV6yAn7m3G5vB2b6f7h8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z",
+);
 
 function App() {
   const { account } = useEthers();
+  const [currentView, setCurrentView] = useState("overview");
   const {
     isOpen: isAccountOpen,
     onOpen: onAccountOpen,
     onClose: onAccountClose,
   } = useDisclosure();
-  const {
-    isOpen: isInvestOpen,
-    onOpen: onInvestOpen,
-    onClose: onInvestClose,
-  } = useDisclosure();
+
+  const renderContent = () => {
+    if (!account) {
+      return (
+        <VStack h="80vh" justify="center" spacing={8}>
+          <Heading color="white" size="2xl" fontWeight="black">
+            Wealth Portal
+          </Heading>
+          <Text color="whiteAlpha.600" maxW="400px" textAlign="center">
+            Connect your institutional wallet to access the secure treasury
+            dashboard and deployment center.
+          </Text>
+          <ConnectButton handleOpenModal={onAccountOpen} />
+        </VStack>
+      );
+    }
+
+    switch (currentView) {
+      case "overview":
+        return <DashboardOverview />;
+      case "invest":
+        return <InvestPage />;
+      default:
+        return <DashboardOverview />;
+    }
+  };
 
   return (
     <ChakraProvider theme={theme}>
-      <Layout>
-        <VStack spacing={8}>
-          <Box>
-            <ConnectButton handleOpenModal={onAccountOpen} />
+      <Elements stripe={stripePromise}>
+        <DashboardLayout
+          currentView={currentView}
+          onViewChange={setCurrentView}
+        >
+          <Box pt={account ? 10 : 0}>
+            {account && (
+              <HStack justify="flex-end" mb={8}>
+                <ConnectButton handleOpenModal={onAccountOpen} />
+              </HStack>
+            )}
+            {renderContent()}
           </Box>
-
-          {account && (
-            <Button
-              colorScheme="blue"
-              size="lg"
-              onClick={onInvestOpen}
-              px={8}
-              borderRadius="xl"
-              boxShadow="lg"
-              _hover={{ transform: "scale(1.05)" }}
-              _active={{ transform: "scale(0.95)" }}
-            >
-              Invest
-            </Button>
-          )}
-        </VStack>
+        </DashboardLayout>
 
         <AccountModal isOpen={isAccountOpen} onClose={onAccountClose} />
-        <InvestmentModal isOpen={isInvestOpen} onClose={onInvestClose} />
-      </Layout>
+      </Elements>
     </ChakraProvider>
   );
 }

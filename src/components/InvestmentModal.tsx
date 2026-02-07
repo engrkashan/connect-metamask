@@ -37,6 +37,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 import TransakOnramp from "./TransakOnramp";
+import StripeCorporateCheckout from "./StripeCorporateCheckout";
 
 type Props = {
   isOpen: boolean;
@@ -60,6 +61,7 @@ export default function InvestmentModal({ isOpen, onClose }: Props) {
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [isBankLinking, setIsBankLinking] = useState(false);
   const [isBankLinked, setIsBankLinked] = useState(false);
+  const [directType, setDirectType] = useState(0); // 0: Card, 1: Bank
 
   const handleInvestETH = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -426,96 +428,124 @@ export default function InvestmentModal({ isOpen, onClose }: Props) {
                     <VStack align="start" spacing={3}>
                       <HStack>
                         <Badge colorScheme="blue" p={1} borderRadius="md">
-                          <Icon as={FaUniversity} />
+                          <Icon as={FaRegBuilding} />
                         </Badge>
                         <Text fontWeight="bold" fontSize="sm">
                           Direct Institutional Gateway
                         </Text>
                       </HStack>
                       <Text fontSize="xs" color="blue.100">
-                        Process high-volume liquidity deployments (up to $5M)
-                        directly from your corporate treasury. No manual wiring
-                        required.
+                        High-limit deployments ($1M+) via Stripe Corporate Card
+                        or Direct Bank Link.
                       </Text>
                     </VStack>
                   </Box>
 
-                  <FormControl id="amount-direct" isRequired>
-                    <FormLabel
-                      color="whiteAlpha.500"
-                      fontSize="xs"
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      ml={1}
-                    >
-                      Direct Deployment (USD)
-                    </FormLabel>
-                    <Input
-                      placeholder="1,000,000.00"
-                      type="number"
-                      bg="whiteAlpha.50"
-                      h="56px"
-                      border="1px solid"
-                      borderColor="whiteAlpha.100"
-                      borderRadius="xl"
-                      _hover={{ borderColor: "whiteAlpha.300" }}
-                      _focus={{
-                        borderColor: "blue.400",
-                        boxShadow: "0 0 0 1px #4299e1",
-                      }}
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      fontSize="2xl"
-                      fontWeight="extrabold"
-                      color="blue.300"
-                    />
-                  </FormControl>
+                  <Tabs
+                    isFitted
+                    variant="soft-rounded"
+                    colorScheme="blue"
+                    onChange={(idx) => setDirectType(idx)}
+                  >
+                    <TabList mb={4} bg="whiteAlpha.50" p={1} borderRadius="2xl">
+                      <Tab fontSize="xs">Corporate Card</Tab>
+                      <Tab fontSize="xs">Direct Bank Link</Tab>
+                    </TabList>
 
-                  <SimpleGrid columns={2} spacing={3} width="full">
-                    {PRESETS_INSTITUTIONAL.map((p) => (
-                      <Button
-                        key={p}
-                        variant="outline"
-                        colorScheme="blue"
-                        size="md"
-                        onClick={() => setAmount(p)}
-                        borderRadius="xl"
-                        fontSize="sm"
-                      >
-                        ${Number(p).toLocaleString()}
-                      </Button>
-                    ))}
-                  </SimpleGrid>
+                    <TabPanels>
+                      <TabPanel p={0}>
+                        <VStack spacing={6}>
+                          <FormControl id="amount-direct-card" isRequired>
+                            <FormLabel
+                              color="whiteAlpha.500"
+                              fontSize="xs"
+                              fontWeight="bold"
+                            >
+                              Card Deployment (USD)
+                            </FormLabel>
+                            <Input
+                              placeholder="1,000,000.00"
+                              type="number"
+                              bg="whiteAlpha.50"
+                              h="56px"
+                              borderRadius="xl"
+                              value={amount}
+                              onChange={(e) => setAmount(e.target.value)}
+                              fontSize="2xl"
+                              fontWeight="extrabold"
+                            />
+                          </FormControl>
+                          <SimpleGrid columns={4} spacing={2} width="full">
+                            {PRESETS_INSTITUTIONAL.map((p) => (
+                              <Button
+                                key={p}
+                                size="xs"
+                                onClick={() => setAmount(p)}
+                                variant="outline"
+                              >
+                                ${Number(p).toLocaleString()}
+                              </Button>
+                            ))}
+                          </SimpleGrid>
+                          <StripeCorporateCheckout
+                            amount={amount}
+                            onSuccess={onClose}
+                          />
+                        </VStack>
+                      </TabPanel>
 
-                  {!isBankLinked ? (
-                    <Button
-                      leftIcon={<FaLock />}
-                      colorScheme="blue"
-                      size="lg"
-                      h="64px"
-                      width="full"
-                      borderRadius="2xl"
-                      onClick={simulateBankLink}
-                      isLoading={isBankLinking}
-                      loadingText="Launching Secure Link..."
-                    >
-                      Link Corporate Bank Account
-                    </Button>
-                  ) : (
-                    <Button
-                      colorScheme="green"
-                      size="lg"
-                      h="64px"
-                      width="full"
-                      borderRadius="2xl"
-                      onClick={handleDirectDeployment}
-                      fontSize="lg"
-                      fontWeight="black"
-                      leftIcon={<FaUniversity />}
-                    >
-                      Confirm Direct Deposit
-                    </Button>
-                  )}
+                      <TabPanel p={0}>
+                        <VStack spacing={6}>
+                          <FormControl id="amount-direct-bank" isRequired>
+                            <FormLabel
+                              color="whiteAlpha.500"
+                              fontSize="xs"
+                              fontWeight="bold"
+                            >
+                              Bank Deployment (USD)
+                            </FormLabel>
+                            <Input
+                              placeholder="1,000,000.00"
+                              type="number"
+                              bg="whiteAlpha.50"
+                              h="56px"
+                              borderRadius="xl"
+                              value={amount}
+                              onChange={(e) => setAmount(e.target.value)}
+                              fontSize="2xl"
+                              fontWeight="extrabold"
+                            />
+                          </FormControl>
+                          {!isBankLinked ? (
+                            <Button
+                              leftIcon={<FaLock />}
+                              colorScheme="blue"
+                              size="lg"
+                              h="64px"
+                              width="full"
+                              borderRadius="2xl"
+                              onClick={simulateBankLink}
+                              isLoading={isBankLinking}
+                            >
+                              Link Bank Account
+                            </Button>
+                          ) : (
+                            <Button
+                              colorScheme="green"
+                              size="lg"
+                              h="64px"
+                              width="full"
+                              borderRadius="2xl"
+                              onClick={handleDirectDeployment}
+                              leftIcon={<FaUniversity />}
+                            >
+                              Confirm Direct Deposit
+                            </Button>
+                          )}
+                        </VStack>
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
 
                   <Text
                     fontSize="10px"
@@ -523,8 +553,8 @@ export default function InvestmentModal({ isOpen, onClose }: Props) {
                     textAlign="center"
                     px={4}
                   >
-                    Direct processing powered by Circle Enterprise & Plaid.
-                    AML/KYC performed at corporate entity level.
+                    Institutional processing powered by Stripe Treasury & Circle
+                    Enterprise.
                   </Text>
                 </VStack>
               </TabPanel>
