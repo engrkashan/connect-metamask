@@ -33,8 +33,12 @@ import {
 import StripeCorporateCheckout from "./StripeCorporateCheckout";
 import TransakOnramp from "./TransakOnramp";
 
-export default function InvestPage() {
-  const [amount, setAmount] = useState("");
+type Props = {
+  initialAmount: string;
+  onAmountChange: (amount: string) => void;
+};
+
+export default function InvestPage({ initialAmount, onAmountChange }: Props) {
   const toast = useToast();
   const [isBankLinking, setIsBankLinking] = useState(false);
   const [isBankLinked, setIsBankLinked] = useState(false);
@@ -57,7 +61,7 @@ export default function InvestPage() {
   const handleBankConfirm = () => {
     toast({
       title: "Processing Deposit",
-      description: `$${amount} is being synced.`,
+      description: `$${initialAmount} is being synced.`,
       status: "info",
     });
   };
@@ -128,8 +132,8 @@ export default function InvestPage() {
                           borderRadius="2xl"
                           fontWeight="black"
                           color="blue.300"
-                          value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
+                          value={initialAmount}
+                          onChange={(e) => onAmountChange(e.target.value)}
                         />
                       </FormControl>
                       <SimpleGrid columns={4} spacing={3} w="full">
@@ -139,7 +143,7 @@ export default function InvestPage() {
                             variant="outline"
                             size="sm"
                             borderRadius="xl"
-                            onClick={() => setAmount(p)}
+                            onClick={() => onAmountChange(p)}
                             borderColor="whiteAlpha.200"
                             color="white"
                             _hover={{ bg: "whiteAlpha.100" }}
@@ -151,7 +155,7 @@ export default function InvestPage() {
                     </VStack>
 
                     <StripeCorporateCheckout
-                      amount={amount}
+                      amount={initialAmount}
                       onSuccess={() => {}}
                     />
                   </VStack>
@@ -174,8 +178,8 @@ export default function InvestPage() {
                         bg="blackAlpha.400"
                         borderRadius="2xl"
                         fontWeight="black"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
+                        value={initialAmount}
+                        onChange={(e) => onAmountChange(e.target.value)}
                       />
                     </FormControl>
 
@@ -217,10 +221,13 @@ export default function InvestPage() {
                       h="64px"
                       bg="blackAlpha.400"
                       borderRadius="xl"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      value={initialAmount}
+                      onChange={(e) => onAmountChange(e.target.value)}
                     />
-                    <TransakOnramp amount={amount} onSuccess={() => {}} />
+                    <TransakOnramp
+                      amount={initialAmount}
+                      onSuccess={() => {}}
+                    />
                   </VStack>
                 </TabPanel>
               </TabPanels>

@@ -44,9 +44,10 @@ const RECENT_ACTIVITY = [
 
 type Props = {
   onViewChange: (view: string) => void;
+  onOptimize: (amount: string) => void;
 };
 
-const DashboardOverview: React.FC<Props> = ({ onViewChange }) => {
+const DashboardOverview: React.FC<Props> = ({ onViewChange, onOptimize }) => {
   return (
     <VStack align="start" spacing={10} animation="fadeIn 0.5s ease-out">
       <VStack align="start" spacing={2}>
@@ -150,6 +151,7 @@ const DashboardOverview: React.FC<Props> = ({ onViewChange }) => {
               color="blue.600"
               borderRadius="xl"
               fontWeight="black"
+              onClick={() => onOptimize("1000000")}
             >
               Optimize Now
             </Button>

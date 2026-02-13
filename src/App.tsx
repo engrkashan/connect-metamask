@@ -21,6 +21,7 @@ const stripePromise = loadStripe(
 function App() {
   const [currentView, setCurrentView] = useState("overview");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [deploymentAmount, setDeploymentAmount] = useState("");
 
   const {
     isOpen: isAccountOpen,
@@ -46,18 +47,38 @@ function App() {
     localStorage.removeItem("vaultic_session");
   };
 
+  const handleOptimize = (amount: string) => {
+    setDeploymentAmount(amount);
+    setCurrentView("invest");
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case "overview":
-        return <DashboardOverview onViewChange={setCurrentView} />;
+        return (
+          <DashboardOverview
+            onViewChange={setCurrentView}
+            onOptimize={handleOptimize}
+          />
+        );
       case "invest":
-        return <InvestPage />;
+        return (
+          <InvestPage
+            initialAmount={deploymentAmount}
+            onAmountChange={setDeploymentAmount}
+          />
+        );
       case "reports":
         return <ReportsPage />;
       case "settings":
         return <SettingsPage />;
       default:
-        return <DashboardOverview onViewChange={setCurrentView} />;
+        return (
+          <DashboardOverview
+            onViewChange={setCurrentView}
+            onOptimize={handleOptimize}
+          />
+        );
     }
   };
 
