@@ -1,19 +1,18 @@
 import {
-  SimpleGrid,
   Box,
-  Text,
-  VStack,
   HStack,
   Icon,
+  SimpleGrid,
   Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
   StatArrow,
+  StatHelpText,
+  StatNumber,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
-import { FaWallet, FaArrowUp, FaGlobe } from "react-icons/fa";
-import { useEtherBalance, useEthers } from "@usedapp/core";
 import { formatEther } from "@ethersproject/units";
+import { useEtherBalance, useEthers } from "@usedapp/core";
+import { FaArrowUp, FaGlobe, FaWallet } from "react-icons/fa";
 
 export default function PortfolioStats() {
   const { account } = useEthers();

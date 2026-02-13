@@ -1,35 +1,35 @@
 import {
-  VStack,
-  Text,
-  Heading,
+  Badge,
   Box,
-  HStack,
-  Icon,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  SimpleGrid,
+  Button,
+  Flex,
   FormControl,
   FormLabel,
+  Heading,
+  HStack,
+  Icon,
   Input,
-  Button,
-  Badge,
-  Tabs,
-  TabList,
+  SimpleGrid,
   Tab,
-  TabPanels,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
   useToast,
-  Flex,
+  VStack,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import {
   FaChevronRight,
-  FaWallet,
-  FaRegBuilding,
   FaLock,
+  FaRegBuilding,
   FaUniversity,
+  FaWallet,
 } from "react-icons/fa";
-import { useState } from "react";
 import StripeCorporateCheckout from "./StripeCorporateCheckout";
 import TransakOnramp from "./TransakOnramp";
 

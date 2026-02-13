@@ -1,22 +1,16 @@
-import {
-  ChakraProvider,
-  useDisclosure,
-  Box,
-  HStack,
-  VStack,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { ChakraProvider, useDisclosure, Box } from "@chakra-ui/react";
 import { useEthers } from "@usedapp/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import theme from "./theme";
-import ConnectButton from "./components/ConnectButton";
 import AccountModal from "./components/AccountModal";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardOverview from "./components/DashboardOverview";
 import InvestPage from "./components/InvestPage";
+import SettingsPage from "./components/SettingsPage";
+import ReportsPage from "./components/ReportsPage";
+import Login from "./components/Login";
 import "@fontsource/inter";
 
 // Mock public key for demo
@@ -25,39 +19,55 @@ const stripePromise = loadStripe(
 );
 
 function App() {
-  const { account } = useEthers();
   const [currentView, setCurrentView] = useState("overview");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const {
     isOpen: isAccountOpen,
     onOpen: onAccountOpen,
     onClose: onAccountClose,
   } = useDisclosure();
 
-  const renderContent = () => {
-    if (!account) {
-      return (
-        <VStack h="80vh" justify="center" spacing={8}>
-          <Heading color="white" size="2xl" fontWeight="black">
-            Wealth Portal
-          </Heading>
-          <Text color="whiteAlpha.600" maxW="400px" textAlign="center">
-            Connect your institutional wallet to access the secure treasury
-            dashboard and deployment center.
-          </Text>
-          <ConnectButton handleOpenModal={onAccountOpen} />
-        </VStack>
-      );
+  // Check session on mount
+  useEffect(() => {
+    const session = localStorage.getItem("vaultic_session");
+    if (session === "authorized") {
+      setIsLoggedIn(true);
     }
+  }, []);
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem("vaultic_session", "authorized");
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("vaultic_session");
+  };
+
+  const renderContent = () => {
     switch (currentView) {
       case "overview":
-        return <DashboardOverview />;
+        return <DashboardOverview onViewChange={setCurrentView} />;
       case "invest":
         return <InvestPage />;
+      case "reports":
+        return <ReportsPage />;
+      case "settings":
+        return <SettingsPage />;
       default:
-        return <DashboardOverview />;
+        return <DashboardOverview onViewChange={setCurrentView} />;
     }
   };
+
+  if (!isLoggedIn) {
+    return (
+      <ChakraProvider theme={theme}>
+        <Login onLogin={handleLoginSuccess} />
+      </ChakraProvider>
+    );
+  }
 
   return (
     <ChakraProvider theme={theme}>
@@ -65,15 +75,10 @@ function App() {
         <DashboardLayout
           currentView={currentView}
           onViewChange={setCurrentView}
+          onOpenAccountModal={onAccountOpen}
+          onLogout={handleLogout}
         >
-          <Box pt={account ? 10 : 0}>
-            {account && (
-              <HStack justify="flex-end" mb={8}>
-                <ConnectButton handleOpenModal={onAccountOpen} />
-              </HStack>
-            )}
-            {renderContent()}
-          </Box>
+          <Box>{renderContent()}</Box>
         </DashboardLayout>
 
         <AccountModal isOpen={isAccountOpen} onClose={onAccountClose} />

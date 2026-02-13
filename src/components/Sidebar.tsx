@@ -1,5 +1,11 @@
-import { VStack, Icon, Text, Box, Flex, Tooltip } from "@chakra-ui/react";
-import { FaChartLine, FaWallet, FaFileAlt, FaCog, FaGem } from "react-icons/fa";
+import { Box, Flex, Icon, Tooltip, VStack } from "@chakra-ui/react";
+import {
+  RiDashboardLine,
+  RiFundsLine,
+  RiFileList3Line,
+  RiSettings4Line,
+  RiShieldFlashFill,
+} from "react-icons/ri";
 
 type NavItemProps = {
   icon: any;
@@ -19,6 +25,7 @@ const NavItem = ({ icon, label, isActive, onClick }: NavItemProps) => {
         bg={isActive ? "blue.600" : "transparent"}
         color={isActive ? "white" : "whiteAlpha.600"}
         transition="all 0.2s"
+        boxShadow={isActive ? "0 4px 12px rgba(37, 99, 235, 0.4)" : "none"}
         _hover={{
           bg: isActive ? "blue.700" : "whiteAlpha.100",
           color: "white",
@@ -41,7 +48,7 @@ export default function Sidebar({ currentView, onViewChange }: Props) {
       direction="column"
       w="80px"
       h="100vh"
-      bg="blackAlpha.400"
+      bg="#0F172A"
       backdropFilter="blur(20px)"
       borderRight="1px solid"
       borderColor="whiteAlpha.100"
@@ -54,25 +61,34 @@ export default function Sidebar({ currentView, onViewChange }: Props) {
       zIndex={10}
     >
       <VStack spacing={8} align="center">
-        <Box color="blue.400" mb={4}>
-          <Icon as={FaGem} boxSize={8} />
+        <Box
+          color="blue.400"
+          mb={4}
+          cursor="pointer"
+          onClick={() => onViewChange("overview")}
+        >
+          <Icon
+            as={RiShieldFlashFill}
+            boxSize={8}
+            filter="drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))"
+          />
         </Box>
 
         <VStack spacing={4}>
           <NavItem
-            icon={FaChartLine}
+            icon={RiDashboardLine}
             label="Overview"
             isActive={currentView === "overview"}
             onClick={() => onViewChange("overview")}
           />
           <NavItem
-            icon={FaWallet}
+            icon={RiFundsLine}
             label="Invest"
             isActive={currentView === "invest"}
             onClick={() => onViewChange("invest")}
           />
           <NavItem
-            icon={FaFileAlt}
+            icon={RiFileList3Line}
             label="Reports"
             isActive={currentView === "reports"}
             onClick={() => onViewChange("reports")}
@@ -80,9 +96,9 @@ export default function Sidebar({ currentView, onViewChange }: Props) {
         </VStack>
       </VStack>
 
-      <Box>
+      <Box pb={4}>
         <NavItem
-          icon={FaCog}
+          icon={RiSettings4Line}
           label="Settings"
           isActive={currentView === "settings"}
           onClick={() => onViewChange("settings")}

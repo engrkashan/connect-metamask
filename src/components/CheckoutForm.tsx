@@ -1,6 +1,6 @@
+import { Box, Button, Text, useToast, VStack } from "@chakra-ui/react";
+import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState } from "react";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { Button, VStack, Box, Text, useToast } from "@chakra-ui/react";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -69,8 +69,6 @@ export default function CheckoutForm({ amount, onSuccess }: Props) {
         });
         setIsProcessing(false);
       } else {
-        console.log("[PaymentMethod]", paymentMethod);
-        // Simulate backend payment intent confirmation
         setTimeout(() => {
           setIsProcessing(false);
           toast({

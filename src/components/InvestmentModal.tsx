@@ -1,7 +1,11 @@
 import {
+  Badge,
+  Box,
   Button,
+  Divider,
   FormControl,
   FormLabel,
+  HStack,
   Icon,
   Input,
   Modal,
@@ -11,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
   Tab,
   TabList,
   TabPanel,
@@ -19,11 +24,6 @@ import {
   Text,
   VStack,
   useToast,
-  HStack,
-  Box,
-  SimpleGrid,
-  Badge,
-  Divider,
 } from "@chakra-ui/react";
 import { useEthers, useSendTransaction } from "@usedapp/core";
 import { utils } from "ethers";
@@ -32,12 +32,12 @@ import {
   FaCreditCard,
   FaEthereum,
   FaInfoCircle,
+  FaLock,
   FaRegBuilding,
   FaUniversity,
-  FaLock,
 } from "react-icons/fa";
-import TransakOnramp from "./TransakOnramp";
 import StripeCorporateCheckout from "./StripeCorporateCheckout";
+import TransakOnramp from "./TransakOnramp";
 
 type Props = {
   isOpen: boolean;

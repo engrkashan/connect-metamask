@@ -1,6 +1,7 @@
-import { Button, Box, Text } from "@chakra-ui/react";
-import { useEthers, useEtherBalance } from "@usedapp/core";
+import { Box, Button, Text, HStack, Icon } from "@chakra-ui/react";
 import { formatEther } from "@ethersproject/units";
+import { useEtherBalance, useEthers } from "@usedapp/core";
+import { RiWallet3Line } from "react-icons/ri";
 import Identicon from "./Identicon";
 
 type Props = {
@@ -19,59 +20,63 @@ export default function ConnectButton({ handleOpenModal }: Props) {
     <Box
       display="flex"
       alignItems="center"
-      background="gray.700"
+      bg="rgba(255, 255, 255, 0.03)"
+      backdropFilter="blur(10px)"
       borderRadius="xl"
-      py="0"
+      border="1px solid"
+      borderColor="whiteAlpha.100"
+      p="1"
+      transition="all 0.2s"
+      _hover={{ borderColor: "blue.500" }}
     >
       <Box px="3">
-        <Text color="white" fontSize="md">
+        <Text color="whiteAlpha.700" fontSize="xs" fontWeight="bold">
           {etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)} ETH
         </Text>
       </Box>
       <Button
         onClick={handleOpenModal}
-        bg="gray.800"
-        border="1px solid transparent"
+        bg="blue.500"
+        color="white"
         _hover={{
-          border: "1px",
-          borderStyle: "solid",
-          borderColor: "blue.400",
-          backgroundColor: "gray.700",
+          bg: "blue.400",
+          transform: "translateY(-1px)",
+          boxShadow: "0 4px 12px rgba(66, 153, 225, 0.3)",
         }}
-        borderRadius="xl"
-        m="1px"
+        _active={{ bg: "blue.600" }}
+        borderRadius="lg"
         px={3}
-        height="38px"
+        height="32px"
+        ml={2}
       >
-        <Text color="white" fontSize="md" fontWeight="medium" mr="2">
-          {account &&
-            `${account.slice(0, 6)}...${account.slice(
-              account.length - 4,
-              account.length
-            )}`}
+        <Text fontSize="xs" fontWeight="black" mr="2">
+          {account && `${account.slice(0, 6)}...${account.slice(-4)}`}
         </Text>
-        <Identicon />
+        <Box p="0.5" bg="white" borderRadius="full">
+          <Identicon />
+        </Box>
       </Button>
     </Box>
   ) : (
     <Button
       onClick={handleConnectWallet}
-      bg="blue.800"
-      color="blue.300"
-      fontSize="lg"
-      fontWeight="medium"
+      leftIcon={<Icon as={RiWallet3Line} />}
+      bg="blue.500"
+      color="white"
+      fontSize="sm"
+      fontWeight="bold"
       borderRadius="xl"
-      border="1px solid transparent"
+      px={6}
       _hover={{
-        borderColor: "blue.700",
-        color: "blue.400",
+        bg: "blue.400",
+        transform: "translateY(-1px)",
+        boxShadow: "0 4px 20px rgba(66, 153, 225, 0.4)",
       }}
       _active={{
-        backgroundColor: "blue.800",
-        borderColor: "blue.700",
+        bg: "blue.600",
       }}
     >
-      Connect to a wallet
+      Connect Vault Wallet
     </Button>
   );
 }

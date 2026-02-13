@@ -1,19 +1,25 @@
+import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Flex,
   Link,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
+  VStack,
+  HStack,
+  Icon,
+  useToast,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon, CopyIcon } from "@chakra-ui/icons";
-import { useEthers } from "@usedapp/core";
+import { useEthers, useEtherBalance } from "@usedapp/core";
+import { formatEther } from "@ethersproject/units";
+import { RiShieldUserLine, RiHistoryLine, RiWalletLine } from "react-icons/ri";
 import Identicon from "./Identicon";
 
 type Props = {
@@ -22,132 +28,172 @@ type Props = {
 };
 
 export default function AccountModal({ isOpen, onClose }: Props) {
-  const { account, deactivate } = useEthers();
+  const { account, deactivate, chainId } = useEthers();
+  const balance = useEtherBalance(account);
+  const toast = useToast();
 
   function handleDeactivateAccount() {
     deactivate();
     onClose();
+    toast({
+      title: "Wallet Disconnected",
+      description: "You have securely closed your wallet bridge.",
+      status: "info",
+      duration: 3000,
+      isClosable: true,
+      position: "top",
+    });
   }
+
+  const handleCopy = () => {
+    if (account) {
+      navigator.clipboard.writeText(account);
+      toast({
+        title: "Address Copied",
+        status: "success",
+        duration: 2000,
+        position: "top",
+      });
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="md">
-      <ModalOverlay />
+      <ModalOverlay backdropFilter="blur(15px)" bg="blackAlpha.700" />
       <ModalContent
-        background="gray.900"
-        border="1px"
-        borderStyle="solid"
-        borderColor="gray.700"
+        bg="#0F172A"
+        border="1px solid"
+        borderColor="whiteAlpha.100"
         borderRadius="3xl"
+        p={2}
       >
-        <ModalHeader color="white" px={4} fontSize="lg" fontWeight="medium">
-          Account
-        </ModalHeader>
-        <ModalCloseButton
+        <ModalHeader
           color="white"
-          fontSize="sm"
-          _hover={{
-            color: "whiteAlpha.700",
-          }}
-        />
-        <ModalBody pt={0} px={4}>
+          px={6}
+          pt={6}
+          fontSize="xl"
+          fontWeight="bold"
+        >
+          Vault Authentication
+        </ModalHeader>
+        <ModalCloseButton color="whiteAlpha.500" top={6} right={6} />
+        <ModalBody pt={2} px={6}>
           <Box
-            borderRadius="3xl"
-            border="1px"
-            borderStyle="solid"
-            borderColor="gray.600"
-            px={5}
-            pt={4}
-            pb={2}
-            mb={3}
+            borderRadius="2xl"
+            bg="whiteAlpha.50"
+            border="1px solid"
+            borderColor="whiteAlpha.100"
+            p={5}
+            mb={6}
           >
-            <Flex justifyContent="space-between" alignItems="center" mb={3}>
-              <Text color="gray.400" fontSize="sm">
-                Connected with MetaMask
-              </Text>
+            <Flex justifyContent="space-between" alignItems="center" mb={6}>
+              <HStack spacing={2}>
+                <Icon as={RiWalletLine} color="blue.400" />
+                <Text
+                  color="whiteAlpha.600"
+                  fontSize="xs"
+                  fontWeight="bold"
+                  textTransform="uppercase"
+                  letterSpacing="widest"
+                >
+                  MetaMask Secure Bridge
+                </Text>
+              </HStack>
               <Button
                 variant="outline"
-                size="sm"
-                borderColor="blue.800"
-                borderRadius="3xl"
-                color="blue.500"
-                fontSize="13px"
-                fontWeight="normal"
-                px={2}
-                height="26px"
-                _hover={{
-                  background: "none",
-                  borderColor: "blue.300",
-                  textDecoration: "underline",
-                }}
+                size="xs"
+                colorScheme="red"
+                borderRadius="lg"
+                fontSize="11px"
+                px={3}
                 onClick={handleDeactivateAccount}
               >
-                Change
+                Disconnect
               </Button>
             </Flex>
-            <Flex alignItems="center" mt={2} mb={4} lineHeight={1}>
-              <Identicon />
-              <Text
-                color="white"
-                fontSize="xl"
-                fontWeight="semibold"
-                ml="2"
-                lineHeight="1.1"
+
+            <Flex alignItems="center" mb={6}>
+              <Box
+                p={1}
+                borderRadius="full"
+                border="2px solid"
+                borderColor="blue.500"
               >
-                {account &&
-                  `${account.slice(0, 6)}...${account.slice(
-                    account.length - 4,
-                    account.length
-                  )}`}
-              </Text>
+                <Identicon />
+              </Box>
+              <VStack align="flex-start" ml={3} spacing={0}>
+                <Text color="white" fontSize="lg" fontWeight="bold">
+                  {account && `${account.slice(0, 10)}...${account.slice(-8)}`}
+                </Text>
+                <Text color="whiteAlpha.500" fontSize="xs">
+                  {balance && parseFloat(formatEther(balance)).toFixed(4)} ETH •{" "}
+                  {chainId === 1 ? "Ethereum Mainnet" : "Connected Network"}
+                </Text>
+              </VStack>
             </Flex>
-            <Flex alignContent="center" m={3}>
+
+            <HStack spacing={4}>
               <Button
-                variant="link"
-                color="gray.400"
-                fontWeight="normal"
-                fontSize="sm"
-                _hover={{
-                  textDecoration: "none",
-                  color: "whiteAlpha.800",
-                }}
+                variant="ghost"
+                color="blue.400"
+                fontWeight="bold"
+                fontSize="xs"
+                leftIcon={<CopyIcon />}
+                onClick={handleCopy}
+                _hover={{ bg: "whiteAlpha.100" }}
+                h="32px"
               >
-                <CopyIcon mr={1} />
                 Copy Address
               </Button>
               <Link
-                fontSize="sm"
-                display="flex"
-                alignItems="center"
-                href={`https://ropsten.etherscan.io/address/${account}`}
+                href={`https://etherscan.io/address/${account}`}
                 isExternal
-                color="gray.400"
-                ml={6}
-                _hover={{
-                  color: "whiteAlpha.800",
-                  textDecoration: "underline",
-                }}
+                _hover={{ textDecoration: "none" }}
               >
-                <ExternalLinkIcon mr={1} />
-                View on Explorer
+                <Button
+                  variant="ghost"
+                  color="blue.400"
+                  fontWeight="bold"
+                  fontSize="xs"
+                  leftIcon={<ExternalLinkIcon />}
+                  _hover={{ bg: "whiteAlpha.100" }}
+                  h="32px"
+                >
+                  View on Explorer
+                </Button>
               </Link>
-            </Flex>
+            </HStack>
           </Box>
+
+          <VStack align="stretch" spacing={4}>
+            <HStack color="whiteAlpha.700">
+              <Icon as={RiHistoryLine} />
+              <Text fontSize="sm" fontWeight="medium">
+                Recent Transactions
+              </Text>
+            </HStack>
+            <Text
+              color="whiteAlpha.400"
+              textAlign="center"
+              py={4}
+              fontSize="xs"
+              border="1px dashed"
+              borderColor="whiteAlpha.100"
+              borderRadius="xl"
+            >
+              No recent vault activity detected.
+            </Text>
+          </VStack>
         </ModalBody>
 
-        <ModalFooter
-          justifyContent="end"
-          background="gray.700"
-          borderBottomLeftRadius="3xl"
-          borderBottomRightRadius="3xl"
-          p={6}
-        >
+        <ModalFooter p={6}>
           <Text
-            color="white"
-            textAlign="left"
-            fontWeight="medium"
-            fontSize="md"
+            color="whiteAlpha.500"
+            fontSize="xs"
+            textAlign="center"
+            w="full"
           >
-            Your transactions willl appear here...
+            Bridge secured by end-to-end encryption.
           </Text>
         </ModalFooter>
       </ModalContent>

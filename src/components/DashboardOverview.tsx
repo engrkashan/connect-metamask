@@ -1,21 +1,22 @@
+import React from "react";
 import {
-  VStack,
-  Heading,
-  Text,
-  SimpleGrid,
+  Badge,
   Box,
+  Button,
   Flex,
+  Heading,
+  HStack,
   Icon,
+  SimpleGrid,
   Table,
   Tbody,
-  Tr,
   Td,
-  Badge,
-  HStack,
-  Button,
+  Text,
+  Tr,
+  VStack,
 } from "@chakra-ui/react";
+import { FaArrowRight, FaHistory } from "react-icons/fa";
 import PortfolioStats from "./PortfolioStats";
-import { FaHistory, FaArrowRight } from "react-icons/fa";
 
 const RECENT_ACTIVITY = [
   {
@@ -41,7 +42,11 @@ const RECENT_ACTIVITY = [
   },
 ];
 
-export default function DashboardOverview() {
+type Props = {
+  onViewChange: (view: string) => void;
+};
+
+const DashboardOverview: React.FC<Props> = ({ onViewChange }) => {
   return (
     <VStack align="start" spacing={10} animation="fadeIn 0.5s ease-out">
       <VStack align="start" spacing={2}>
@@ -74,6 +79,7 @@ export default function DashboardOverview() {
               color="blue.400"
               cursor="pointer"
               _hover={{ textDecor: "underline" }}
+              onClick={() => onViewChange("reports")}
             >
               View All
             </Text>
@@ -162,4 +168,6 @@ export default function DashboardOverview() {
       </SimpleGrid>
     </VStack>
   );
-}
+};
+
+export default DashboardOverview;
