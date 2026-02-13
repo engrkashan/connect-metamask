@@ -32,11 +32,14 @@ export default function TransakOnramp({ amount, onSuccess }: Props) {
 
     transak.init();
 
-    Transak.on(Transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData: any) => {
-      console.log("Order Data:", orderData);
-      transak.close();
-      onSuccess();
-    });
+    Transak.on(
+      Transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL,
+      (orderData: Record<string, unknown>) => {
+        console.log("Order Data:", orderData);
+        transak.close();
+        onSuccess();
+      },
+    );
   };
 
   return (

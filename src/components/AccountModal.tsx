@@ -23,8 +23,8 @@ import { RiShieldUserLine, RiHistoryLine, RiWalletLine } from "react-icons/ri";
 import Identicon from "./Identicon";
 
 type Props = {
-  isOpen: any;
-  onClose: any;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 export default function AccountModal({ isOpen, onClose }: Props) {

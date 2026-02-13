@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   VStack,
@@ -72,6 +72,15 @@ const REPORTS_DATA = [
 ];
 
 const ReportsPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredData = REPORTS_DATA.filter((row) =>
+    Object.values(row)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()),
+  );
+
   return (
     <VStack spacing={8} w="full" align="stretch" py={4}>
       <Box
@@ -97,6 +106,8 @@ const ReportsPage: React.FC = () => {
                 bg="whiteAlpha.50"
                 border="none"
                 _focus={{ bg: "whiteAlpha.100" }}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </InputGroup>
             <Box
@@ -134,7 +145,7 @@ const ReportsPage: React.FC = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {REPORTS_DATA.map((row) => (
+            {filteredData.map((row) => (
               <Tr
                 key={row.id}
                 _hover={{ bg: "whiteAlpha.50" }}

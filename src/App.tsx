@@ -1,4 +1,9 @@
-import { ChakraProvider, useDisclosure, Box } from "@chakra-ui/react";
+import {
+  ChakraProvider,
+  useDisclosure,
+  Box,
+  SlideFade,
+} from "@chakra-ui/react";
 import { useEthers } from "@usedapp/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -56,28 +61,54 @@ function App() {
     switch (currentView) {
       case "overview":
         return (
-          <DashboardOverview
-            onViewChange={setCurrentView}
-            onOptimize={handleOptimize}
-          />
+          <SlideFade
+            in={currentView === "overview"}
+            offsetY="20px"
+            key="overview"
+          >
+            <DashboardOverview
+              onViewChange={setCurrentView}
+              onOptimize={handleOptimize}
+            />
+          </SlideFade>
         );
       case "invest":
         return (
-          <InvestPage
-            initialAmount={deploymentAmount}
-            onAmountChange={setDeploymentAmount}
-          />
+          <SlideFade in={currentView === "invest"} offsetY="20px" key="invest">
+            <InvestPage
+              initialAmount={deploymentAmount}
+              onAmountChange={setDeploymentAmount}
+            />
+          </SlideFade>
         );
       case "reports":
-        return <ReportsPage />;
+        return (
+          <SlideFade
+            in={currentView === "reports"}
+            offsetY="20px"
+            key="reports"
+          >
+            <ReportsPage />
+          </SlideFade>
+        );
       case "settings":
-        return <SettingsPage />;
+        return (
+          <SlideFade
+            in={currentView === "settings"}
+            offsetY="20px"
+            key="settings"
+          >
+            <SettingsPage />
+          </SlideFade>
+        );
       default:
         return (
-          <DashboardOverview
-            onViewChange={setCurrentView}
-            onOptimize={handleOptimize}
-          />
+          <SlideFade in={true} offsetY="20px" key="default">
+            <DashboardOverview
+              onViewChange={setCurrentView}
+              onOptimize={handleOptimize}
+            />
+          </SlideFade>
         );
     }
   };

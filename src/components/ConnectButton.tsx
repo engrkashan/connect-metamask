@@ -5,7 +5,7 @@ import { RiWallet3Line } from "react-icons/ri";
 import Identicon from "./Identicon";
 
 type Props = {
-  handleOpenModal: any;
+  handleOpenModal: () => void;
 };
 
 export default function ConnectButton({ handleOpenModal }: Props) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   VStack,
@@ -29,7 +29,7 @@ const SettingsSection = ({
   children,
 }: {
   title: string;
-  icon: any;
+  icon: React.ElementType;
   children: React.ReactNode;
 }) => (
   <Box
@@ -38,6 +38,8 @@ const SettingsSection = ({
     borderRadius="2xl"
     border="1px solid rgba(255, 255, 255, 0.08)"
     w="full"
+    transition="all 0.2s"
+    _hover={{ borderColor: "blue.500", bg: "rgba(255, 255, 255, 0.05)" }}
   >
     <HStack spacing={3} mb={6}>
       <Icon as={icon} color="blue.400" boxSize={5} />
@@ -75,10 +77,19 @@ const SettingItem = ({
 
 const SettingsPage: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [profile, setProfile] = useState({
-    name: "Vault Commander",
-    email: "commander@vaultic.io",
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem("vaultic_profile");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          name: "Vault Commander",
+          email: "commander@vaultic.io",
+        };
   });
+
+  useEffect(() => {
+    localStorage.setItem("vaultic_profile", JSON.stringify(profile));
+  }, [profile]);
 
   const handleSaveProfile = (name: string, email: string) => {
     setProfile({ name, email });

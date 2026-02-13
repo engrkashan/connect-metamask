@@ -8,7 +8,7 @@ import {
 } from "react-icons/ri";
 
 type NavItemProps = {
-  icon: any;
+  icon: React.ElementType;
   label: string;
   isActive?: boolean;
   onClick: () => void;
