@@ -27,6 +27,7 @@ function App() {
   const [currentView, setCurrentView] = useState("overview");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [deploymentAmount, setDeploymentAmount] = useState("");
+  const [purchasedBalance, setPurchasedBalance] = useState("0");
 
   const {
     isOpen: isAccountOpen,
@@ -40,7 +41,15 @@ function App() {
     if (session === "authorized") {
       setIsLoggedIn(true);
     }
+    const savedBalance = localStorage.getItem("vaultic_purchased_balance");
+    if (savedBalance) {
+      setPurchasedBalance(savedBalance);
+    }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("vaultic_purchased_balance", purchasedBalance);
+  }, [purchasedBalance]);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
@@ -69,6 +78,7 @@ function App() {
             <DashboardOverview
               onViewChange={setCurrentView}
               onOptimize={handleOptimize}
+              purchasedBalance={purchasedBalance}
             />
           </SlideFade>
         );
@@ -78,6 +88,8 @@ function App() {
             <InvestPage
               initialAmount={deploymentAmount}
               onAmountChange={setDeploymentAmount}
+              purchasedBalance={purchasedBalance}
+              setPurchasedBalance={setPurchasedBalance}
             />
           </SlideFade>
         );
@@ -107,6 +119,7 @@ function App() {
             <DashboardOverview
               onViewChange={setCurrentView}
               onOptimize={handleOptimize}
+              purchasedBalance={purchasedBalance}
             />
           </SlideFade>
         );

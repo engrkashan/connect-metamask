@@ -32,16 +32,55 @@ import {
 } from "react-icons/fa";
 import StripeCorporateCheckout from "./StripeCorporateCheckout";
 import TransakOnramp from "./TransakOnramp";
+import TransferUI from "./TransferUI";
+
+const TIERS = [
+  {
+    id: "silver",
+    name: "Silver Tier",
+    range: "$10k - $100k",
+    apy: "8%",
+    min: "10000",
+    color: "gray.400",
+    bg: "whiteAlpha.100",
+  },
+  {
+    id: "gold",
+    name: "Gold Tier",
+    range: "$100k - $1M",
+    apy: "12%",
+    min: "100000",
+    color: "yellow.400",
+    bg: "orange.900",
+  },
+  {
+    id: "institutional",
+    name: "Institutional",
+    range: "$1M+",
+    apy: "15%",
+    min: "1000000",
+    color: "blue.400",
+    bg: "blue.900",
+  },
+];
 
 type Props = {
   initialAmount: string;
   onAmountChange: (amount: string) => void;
+  purchasedBalance: string;
+  setPurchasedBalance: (balance: string) => void;
 };
 
-export default function InvestPage({ initialAmount, onAmountChange }: Props) {
+export default function InvestPage({
+  initialAmount,
+  onAmountChange,
+  purchasedBalance,
+  setPurchasedBalance,
+}: Props) {
   const toast = useToast();
   const [isBankLinking, setIsBankLinking] = useState(false);
   const [isBankLinked, setIsBankLinked] = useState(false);
+  const [selectedTier, setSelectedTier] = useState("institutional");
 
   const PRESETS_INSTITUTIONAL = ["50000", "250000", "500000", "1000000"];
 
@@ -64,6 +103,15 @@ export default function InvestPage({ initialAmount, onAmountChange }: Props) {
       description: `$${initialAmount} is being synced.`,
       status: "info",
     });
+    setPurchasedBalance(
+      (parseFloat(purchasedBalance) + parseFloat(initialAmount)).toString(),
+    );
+  };
+
+  const handlePurchaseComplete = (amount: string) => {
+    setPurchasedBalance(
+      (parseFloat(purchasedBalance) + parseFloat(amount)).toString(),
+    );
   };
 
   return (
@@ -88,12 +136,55 @@ export default function InvestPage({ initialAmount, onAmountChange }: Props) {
           Institutional Deployment
         </Heading>
         <Text color="whiteAlpha.600" fontSize="sm">
-          Select your capital source for direct asset allocation
+          Select your capital source and investment tier for direct asset
+          allocation
         </Text>
       </VStack>
 
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="full">
+        {TIERS.map((tier) => (
+          <Box
+            key={tier.id}
+            p={5}
+            bg={selectedTier === tier.id ? tier.bg : "whiteAlpha.50"}
+            borderRadius="2xl"
+            border="2px solid"
+            borderColor={selectedTier === tier.id ? tier.color : "transparent"}
+            cursor="pointer"
+            onClick={() => {
+              setSelectedTier(tier.id);
+              onAmountChange(tier.min);
+            }}
+            transition="all 0.3s"
+            _hover={{ transform: "translateY(-4px)", bg: tier.bg }}
+          >
+            <VStack align="start" spacing={1}>
+              <Badge
+                colorScheme={tier.id === "institutional" ? "blue" : "gray"}
+              >
+                {tier.apy} APY
+              </Badge>
+              <Text fontWeight="black" fontSize="md" color="white">
+                {tier.name}
+              </Text>
+              <Text fontSize="2xs" color="whiteAlpha.600">
+                {tier.range}
+              </Text>
+            </VStack>
+          </Box>
+        ))}
+      </SimpleGrid>
+
       <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={8} w="full">
         <Box gridColumn={{ lg: "span 2" }}>
+          {parseFloat(purchasedBalance) > 0 && (
+            <Box mb={8}>
+              <TransferUI
+                amount={purchasedBalance}
+                onTransferComplete={() => setPurchasedBalance("0")}
+              />
+            </Box>
+          )}
           <Box
             bg="whiteAlpha.50"
             backdropFilter="blur(10px)"
@@ -156,7 +247,7 @@ export default function InvestPage({ initialAmount, onAmountChange }: Props) {
 
                     <StripeCorporateCheckout
                       amount={initialAmount}
-                      onSuccess={() => {}}
+                      onSuccess={() => handlePurchaseComplete(initialAmount)}
                     />
                   </VStack>
                 </TabPanel>
@@ -226,7 +317,7 @@ export default function InvestPage({ initialAmount, onAmountChange }: Props) {
                     />
                     <TransakOnramp
                       amount={initialAmount}
-                      onSuccess={() => {}}
+                      onSuccess={() => handlePurchaseComplete(initialAmount)}
                     />
                   </VStack>
                 </TabPanel>

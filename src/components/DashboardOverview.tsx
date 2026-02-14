@@ -21,6 +21,7 @@ import {
   RiFundsLine,
   RiExchangeLine,
   RiShieldFlashLine,
+  RiInboxArchiveLine,
 } from "react-icons/ri";
 import PortfolioStats from "./PortfolioStats";
 
@@ -51,9 +52,14 @@ const RECENT_ACTIVITY = [
 type Props = {
   onViewChange: (view: string) => void;
   onOptimize: (amount: string) => void;
+  purchasedBalance: string;
 };
 
-const DashboardOverview: React.FC<Props> = ({ onViewChange, onOptimize }) => {
+const DashboardOverview: React.FC<Props> = ({
+  onViewChange,
+  onOptimize,
+  purchasedBalance,
+}) => {
   const [ethPrice, setEthPrice] = useState(2842.12);
 
   useEffect(() => {
@@ -151,6 +157,56 @@ const DashboardOverview: React.FC<Props> = ({ onViewChange, onOptimize }) => {
         </Box>
 
         <VStack spacing={8} w="full">
+          <Box
+            p={6}
+            w="full"
+            bg="whiteAlpha.50"
+            borderRadius="3xl"
+            border="1px solid"
+            borderColor="whiteAlpha.100"
+            transition="all 0.3s cubic-bezier(.08,.52,.52,1)"
+            _hover={{
+              transform: "translateY(-5px)",
+              borderColor: "blue.400",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+            }}
+          >
+            <Flex justify="space-between" mb={4} align="center">
+              <HStack spacing={3}>
+                <Icon as={RiInboxArchiveLine} color="blue.400" boxSize={5} />
+                <Heading size="sm">Internal Treasury</Heading>
+              </HStack>
+              <Badge
+                colorScheme="blue"
+                variant="solid"
+                borderRadius="full"
+                px={3}
+              >
+                Settling
+              </Badge>
+            </Flex>
+            <VStack align="start" spacing={1}>
+              <Text fontSize="2xl" fontWeight="black" color="white">
+                ${parseFloat(purchasedBalance).toLocaleString()}
+              </Text>
+              <Text fontSize="xs" color="whiteAlpha.500">
+                Assets ready for on-chain deployment
+              </Text>
+            </VStack>
+            {parseFloat(purchasedBalance) > 0 && (
+              <Button
+                mt={4}
+                size="sm"
+                colorScheme="blue"
+                variant="outline"
+                w="full"
+                borderRadius="xl"
+                onClick={() => onViewChange("invest")}
+              >
+                Complete Deployment
+              </Button>
+            )}
+          </Box>
           <Box
             p={6}
             w="full"

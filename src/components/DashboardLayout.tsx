@@ -26,7 +26,7 @@ export default function DashboardLayout({
   onLogout,
 }: Props) {
   return (
-    <Flex bg="#020617" minH="100vh" color="white" overflow="hidden">
+    <Flex bg="#020817" minH="100vh" color="white" overflow="hidden">
       <Sidebar currentView={currentView} onViewChange={onViewChange} />
 
       <Box
@@ -46,12 +46,24 @@ export default function DashboardLayout({
           {/* Background Decorative Element */}
           <Box
             position="absolute"
-            top="-10%"
+            top="-15%"
             right="-10%"
-            width="600px"
-            height="600px"
-            bgGradient="radial(blue.900 0%, transparent 70%)"
-            opacity="0.2"
+            width="800px"
+            height="800px"
+            bgGradient="radial(blue.800 0%, transparent 75%)"
+            opacity="0.3"
+            zIndex="0"
+            pointerEvents="none"
+          />
+
+          <Box
+            position="absolute"
+            bottom="-10%"
+            left="-5%"
+            width="500px"
+            height="500px"
+            bgGradient="radial(purple.900 0%, transparent 70%)"
+            opacity="0.1"
             zIndex="0"
             pointerEvents="none"
           />
